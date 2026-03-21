@@ -1,4 +1,4 @@
-## GUIDWIRE
+## GigShield AI: Parametric Income Protection for Delivery Partners
 ## **1. Problem Definition**
 
 Gig economy delivery partners in India working with platforms like Swiggy, Zomato, Amazon, and Zepto rely heavily on daily work for income. However, their earnings are vulnerable to external disruptions such as heavy rain, extreme heat, pollution spikes, floods, or sudden curfews, which can slow or stop deliveries and reduce weekly earnings by around 20–30%. Currently, traditional insurance covers health, accidents, or vehicle damage but does not protect workers from temporary income loss caused by such external conditions. To address this gap, we propose an **AI-powered parametric insurance platform** that automatically compensates gig workers when predefined disruption events occur.
@@ -271,25 +271,25 @@ Libraries: 
 
 External APIs are used to detect disruption events and process automated payouts.
 
-Weather API
+**Weather API**
 
 Example: OpenWeather API
 
 Used to monitor environmental disruptions such as rainfall, extreme heat, and storms that may prevent deliveries.
 
-Air Quality API
+**Air Quality API**
 
 Example: AQICN API
 
 Used to track pollution levels and AQI spikes that may impact outdoor delivery operations.
 
-Traffic API
+**Traffic API**
 
 Example: Google Maps Traffic API
 
 Used to detect severe traffic congestion or road blockages affecting delivery routes.
 
-Payment API
+**Payment API**
 
 Example: Razorpay Sandbox
 
