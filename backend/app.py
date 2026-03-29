@@ -1,5 +1,6 @@
 from flask import Flask
 from config import Config
+from flask_cors import CORS
 from database.db import init_db
 
 # ── Route imports ────────────────────────────────────────────────────────────
@@ -20,8 +21,11 @@ from routes.threshold_routes        import threshold_bp
 
 
 def create_app(config_class=Config):
+    
     app = Flask(__name__)
+    CORS(app)
     app.config.from_object(config_class)
+
 
     init_db(app)
 

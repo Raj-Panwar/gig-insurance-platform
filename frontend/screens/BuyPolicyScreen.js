@@ -1,7 +1,7 @@
 // screens/BuyPolicyScreen.js
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet, Alert } from 'react-native';
-import { buyPolicy } from '../services/api';
+import { buyPolicy } from '../src/services/policyService';
 
 export default function BuyPolicyScreen({ navigation, route }) {
   const { userId, zoneId, premium } = route.params;

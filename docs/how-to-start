@@ -1,0 +1,5 @@
+cd backend
+flask run --host=0.0.0.0
+cd frontend
+npx expo start
+npx expo start -c

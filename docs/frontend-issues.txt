@@ -1,0 +1,142 @@
+**Frontend Requirements & Issues to Fix**
+
+### 1. Register Flow
+
+API: `POST /auth/register`
+
+Possible responses:
+
+* **201** → User created successfully
+* **409** → User already exists
+
+Frontend behavior:
+
+* If **409**, show message: **“User already registered.”**
+* Provide **button/link to Login page**.
+
+UX improvement:
+
+* After successful registration:
+
+  * either **prefill the phone number on the login screen**, or
+  * **auto-login the user and redirect to Dashboard**.
+
+UI improvements:
+
+* Change label **“Phone” → “Phone Number”**.
+* Make **Register** a separate text link instead of part of the login button.
+
+---
+
+### 2. Login Navigation Issue
+
+Current flow:
+
+Login → **Premium Screen**
+
+Expected flow:
+
+Login → **Dashboard**
+
+After successful login, users should land on a **Dashboard/Home screen**, not the premium calculation page.
+
+---
+
+### 3. Premium Screen UX Issue
+
+Currently users can manually:
+
+* enter `zone_id`
+* click **Calculate Premium**
+
+This is **not intended UX**.
+
+Premium calculation should be **automatic**.
+
+Required change:
+
+* Remove manual `zone_id` input.
+* When the **Dashboard loads**, automatically call:
+
+`POST /premium/calculate`
+
+Send:
+
+* `zone_id`
+* `coverage_amount`
+
+Display only the **final premium result** to the user.
+
+The current screen should only be used for **developer testing**, not end users.
+
+---
+
+### 4. Screens Required for Phase 2
+
+Frontend should implement these **5 screens**:
+
+**1. Register Screen**
+Fields:
+
+* Name
+* Phone Number
+* City
+* Platform (Swiggy/Zomato)
+
+API:
+`POST /auth/register`
+
+---
+
+**2. Login Screen**
+
+Field:
+
+* Phone Number
+
+API:
+`POST /auth/login`
+
+After login → redirect to **Dashboard**.
+
+---
+
+**3. Dashboard**
+
+Show:
+
+* Location
+* Risk Level
+* Premium
+* Coverage Amount
+* Policy Status
+
+Button:
+**Activate Protection**
+
+Premium should be **auto-calculated when the dashboard loads**.
+
+---
+
+**4. Policy Activation Screen**
+
+API:
+`POST /policy/buy`
+
+Show:
+
+* Premium (example: ₹60/week)
+* Coverage (example: ₹2000)
+
+---
+
+**5. Claim Status Screen**
+
+Show:
+
+* Last Trigger Event
+* Claim Status
+* Payout Amount
+
+Example:
+“Flood trigger detected – ₹2000 payout initiated.”
