@@ -3,6 +3,8 @@ from database.db import db
 from models.claim import Claim
 from models.policy import Policy
 from models.payout import Payout
+from services.payment_service import process_mock_payment
+from services.notification_service import notify_payout_processed
 from datetime import datetime
 
 payout_bp = Blueprint("payout", __name__, url_prefix="/payout")
@@ -29,7 +31,7 @@ def process_payout():
     if not claim:
         return jsonify({"error": f"Claim with id {claim_id} not found."}), 404
 
-    # Step 2: Check claim status is PENDING
+    # Step 2: Check claim is eligible for payout
     if claim.status != "PENDING":
         return jsonify({
             "error": f"Claim is not eligible for payout. Current status: '{claim.status}'."
@@ -43,26 +45,49 @@ def process_payout():
     # Step 4: Calculate payout amount (50% of coverage)
     payout_amount = round(float(policy.coverage_amount) * PAYOUT_PERCENTAGE, 2)
 
-    # Step 5: Create Payout record
+    # Step 5: Call mock payment gateway
+    try:
+        transaction = process_mock_payment(
+            user_id = claim.user_id,
+            amount  = payout_amount,
+        )
+    except ValueError as e:
+        return jsonify({"error": "Payment failed.", "details": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": "Payment gateway error.", "details": str(e)}), 502
+
+    # Step 6: Create Payout record (store transaction_id for reference)
     payout = Payout(
-        claim_id     = claim.claim_id,
-        amount       = payout_amount,
-        status       = "PROCESSED",
-        processed_at = datetime.utcnow(),
+        claim_id       = claim.claim_id,
+        amount         = payout_amount,
+        status         = "PROCESSED",
+        transaction_id = transaction["transaction_id"],
+        processed_at   = datetime.utcnow(),
     )
     db.session.add(payout)
 
-    # Step 6: Update claim status to PAID
+    # Step 7: Update claim status to PAID
     claim.status = "PAID"
 
     db.session.commit()
 
+    # Fire notification (non-blocking, after commit)
+    notify_payout_processed(
+        user_id        = claim.user_id,
+        amount         = payout_amount,
+        transaction_id = transaction["transaction_id"],
+    )
+
     return jsonify({
-        "message":         "Payout processed.",
+        "message": "Payout processed successfully.",
         "claim_id":        claim.claim_id,
         "policy_id":       policy.policy_id,
         "coverage_amount": float(policy.coverage_amount),
-        "payout_amount":   payout_amount,
-        "payout_status":   payout.status,
-        "processed_at":    payout.processed_at.isoformat(),
+        "transaction": {
+            "transaction_id": transaction["transaction_id"],
+            "amount":         transaction["amount"],
+            "method":         transaction["method"],
+            "status":         transaction["status"],
+            "timestamp":      transaction["timestamp"],
+        },
     }), 201
