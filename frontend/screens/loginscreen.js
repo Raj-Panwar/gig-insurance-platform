@@ -1,10 +1,14 @@
-// screens/loginscreen.js
+// screens/LoginScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import {
+  View, Text, TextInput, Button, StyleSheet,
+  Alert, ActivityIndicator, TouchableOpacity,
+} from 'react-native';
 import { loginWorker } from '../src/services/authService';
 
-export default function LoginScreen({ navigation }) {
-  const [phone, setPhone]     = useState('');
+export default function LoginScreen({ navigation, route }) {
+  // Prefill phone if coming from RegisterScreen
+  const [phone, setPhone]     = useState(route.params?.prefillPhone || '');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
@@ -14,10 +18,9 @@ export default function LoginScreen({ navigation }) {
     }
     setLoading(true);
     try {
-      // loginWorker stores token + user_id in AsyncStorage automatically
       const { user_id } = await loginWorker(phone.trim());
-      Alert.alert('Success', 'Logged in!');
-      navigation.navigate('PremiumScreen', { userId: user_id });
+      // Correct flow: Login → WorkerDashboard
+      navigation.replace('WorkerDashboard', { userId: user_id });
     } catch (err) {
       Alert.alert('Error', err?.message || 'Login failed. Check your phone number.');
     } finally {
@@ -34,15 +37,15 @@ export default function LoginScreen({ navigation }) {
         value={phone}
         onChangeText={setPhone}
         keyboardType="phone-pad"
+        autoFocus={!phone}
       />
       {loading
         ? <ActivityIndicator size="large" color="#0000ff" />
         : <Button title="Login" onPress={handleLogin} />
       }
-      <Button
-        title="Don't have an account? Register"
-        onPress={() => navigation.navigate('Register')}
-      />
+      <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.link}>
+        <Text style={styles.linkText}>Don't have an account? Register</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -50,5 +53,7 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 20 },
   input:     { borderWidth: 1, borderColor: '#ccc', padding: 10, marginVertical: 5, borderRadius: 5 },
-  title:     { fontSize: 24, marginBottom: 20, textAlign: 'center' },
+  title:     { fontSize: 24, marginBottom: 20, textAlign: 'center', fontWeight: 'bold' },
+  link:      { marginTop: 16, alignItems: 'center' },
+  linkText:  { color: '#0066cc', fontSize: 14 },
 });
