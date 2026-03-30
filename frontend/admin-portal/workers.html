@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GigShield Admin — Workers</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">🛡️ GigShield Admin</div>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="workers.html" class="active">Workers</a>
+      <a href="policies.html">Policies</a>
+      <a href="claims.html">Claims</a>
+      <a href="payouts.html">Payouts</a>
+      <a href="simulate.html">Simulate</a>
+    </div>
+    <div style="display:flex;align-items:center;">
+      <span class="admin-info">Logged in as: <strong id="admin-name"></strong></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">👷 Registered Workers</div>
+        <div class="page-subtitle">All gig workers onboarded via the mobile app</div>
+      </div>
+    </div>
+
+    <p id="loading" class="loading">Loading workers...</p>
+
+    <div id="content" style="display:none;">
+      <div class="table-controls">
+        <span class="count-label" id="worker-count"></span>
+        <input class="search-input" id="search" type="text" placeholder="🔍 Search by name..."/>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>User ID</th><th>Name</th><th>Email</th><th>Role</th></tr>
+          </thead>
+          <tbody id="workers-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/workers.js"></script>
+</body>
+</html>

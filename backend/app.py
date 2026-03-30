@@ -22,7 +22,6 @@ from routes.payout_routes           import payout_bp
 from routes.premium_routes          import premium_bp
 from routes.dashboard_routes        import dashboard_bp
 from routes.simulate_routes         import simulate_bp
-from routes.simulation_routes       import simulation_bp
 from routes.worker_routes           import worker_bp
 from routes.admin_routes            import admin_bp
 from routes.admin_dashboard_routes  import admin_dashboard_bp
@@ -51,7 +50,6 @@ def create_app(config_class=Config):
     app.register_blueprint(premium_bp)           # /premium/*
     app.register_blueprint(dashboard_bp)         # /dashboard/stats
     app.register_blueprint(simulate_bp)          # /simulate/*
-    app.register_blueprint(simulation_bp)        # alias
     app.register_blueprint(worker_bp)            # /worker/*
     app.register_blueprint(admin_bp)             # /admin/*
     app.register_blueprint(admin_dashboard_bp)   # /dashboard/claims|payouts|workers

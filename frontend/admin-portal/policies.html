@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GigShield Admin — Policies</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">🛡️ GigShield Admin</div>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="workers.html">Workers</a>
+      <a href="policies.html" class="active">Policies</a>
+      <a href="claims.html">Claims</a>
+      <a href="payouts.html">Payouts</a>
+      <a href="simulate.html">Simulate</a>
+    </div>
+    <div style="display:flex;align-items:center;">
+      <span class="admin-info">Logged in as: <strong id="admin-name"></strong></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">📋 Insurance Policies</div>
+        <div class="page-subtitle">Weekly premium model — income protection only</div>
+      </div>
+    </div>
+
+    <p id="loading" class="loading">Loading policies...</p>
+
+    <div id="content" style="display:none;">
+      <div class="table-controls">
+        <span class="count-label" id="policy-count"></span>
+        <select class="filter-select" id="status-filter">
+          <option value="ALL">All Statuses</option>
+          <option value="ACTIVE">ACTIVE</option>
+          <option value="EXPIRED">EXPIRED</option>
+          <option value="CANCELLED">CANCELLED</option>
+        </select>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Policy ID</th><th>User ID</th><th>Zone ID</th><th>Weekly Premium</th><th>Coverage Amount</th><th>Status</th></tr>
+          </thead>
+          <tbody id="policies-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/policies.js"></script>
+</body>
+</html>

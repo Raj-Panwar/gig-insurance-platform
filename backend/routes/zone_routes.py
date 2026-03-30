@@ -8,13 +8,18 @@ zone_bp = Blueprint("zone", __name__, url_prefix="/zone")
 # GET /zone/by-city/<city>
 # Returns zone risk info for a given city name (case-insensitive).
 # Used by the frontend to auto-calculate premium based on user's city.
+# Falls back to the first available zone if city is not seeded.
 # ---------------------------------------------------------------------------
 @zone_bp.route("/by-city/<string:city>", methods=["GET"])
 def get_zone_by_city(city):
     zone = Zone.query.filter(Zone.city.ilike(city.strip())).first()
 
     if not zone:
-        # Fallback: return a MEDIUM risk default so the app never hard-fails
+        # Fallback: use the first available zone (always seeded)
+        zone = Zone.query.first()
+
+    if not zone:
+        # Database has no zones at all — return safe defaults without a zone_id
         return jsonify({
             "found":          False,
             "zone_id":        None,
@@ -26,7 +31,6 @@ def get_zone_by_city(city):
             "heat_risk":      0.5,
         }), 200
 
-    # weather_risk = average of the three risk scores stored in the zone
     weather_risk = round(
         (zone.flood_risk + zone.pollution_risk + zone.heat_risk) / 3, 2
     )

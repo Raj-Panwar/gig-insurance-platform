@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GigShield Admin — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">🛡️ GigShield Admin</div>
+    <div class="nav-links">
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="workers.html">Workers</a>
+      <a href="policies.html">Policies</a>
+      <a href="claims.html">Claims</a>
+      <a href="payouts.html">Payouts</a>
+      <a href="simulate.html">Simulate</a>
+    </div>
+    <div style="display:flex;align-items:center;">
+      <span class="admin-info">Logged in as: <strong id="admin-name"></strong></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">📊 System Dashboard</div>
+        <div class="page-subtitle">Phase 2 — Registration · Policy Management · Dynamic Premium · Claims</div>
+      </div>
+    </div>
+
+    <div class="flow-note">
+      💡 <strong>Phase 2 Demo Flow:</strong>
+      Register a worker (mobile app) → Calculate Premium → Buy Policy → Simulate a disruption (this page) → Claims are auto-created → Process Payouts
+    </div>
+
+    <p id="loading" class="loading">Loading dashboard stats...</p>
+
+    <div id="stats-grid" class="stats-grid" style="display:none;">
+      <div class="stat-card">
+        <div class="stat-value" id="total-users">—</div>
+        <div class="stat-label">Registered Workers</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-value" id="active-policies">—</div>
+        <div class="stat-label">Active Policies</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-value" id="total-claims">—</div>
+        <div class="stat-label">Total Claims</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-value" id="approved-claims">—</div>
+        <div class="stat-label">Approved Claims</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-value" id="total-payouts">—</div>
+        <div class="stat-label">Total Payouts</div>
+      </div>
+    </div>
+
+    <div id="recent-section" style="display:none;">
+      <div class="section-title">🕐 Recent Claims</div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Claim ID</th><th>Worker</th><th>Trigger</th><th>Status</th><th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="recent-tbody"></tbody>
+        </table>
+      </div>
+      <div class="mt-16">
+        <a href="claims.html" class="btn btn-primary btn-sm">View All Claims →</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

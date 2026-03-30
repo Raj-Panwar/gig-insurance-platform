@@ -8,7 +8,6 @@ worker_dashboard_bp = Blueprint("worker_dashboard", __name__, url_prefix="/worke
 
 
 def _get_user_or_404(user_id: int):
-    """Fetch user by id, return (user, error_response) tuple."""
     user = User.query.get(user_id)
     if not user:
         return None, (jsonify({"error": f"User with id {user_id} not found."}), 404)
@@ -16,12 +15,10 @@ def _get_user_or_404(user_id: int):
 
 
 def _active_policy(user_id: int):
-    """Return the first ACTIVE policy for a user, or None."""
     return Policy.query.filter_by(user_id=user_id, status="ACTIVE").first()
 
 
 def _total_payout_for_user(user_id: int) -> float:
-    """Sum all processed payout amounts across all claims for a user."""
     claims = Claim.query.filter_by(user_id=user_id).all()
     total = 0.0
     for claim in claims:
@@ -32,7 +29,6 @@ def _total_payout_for_user(user_id: int) -> float:
 
 # ---------------------------------------------------------------------------
 # GET /worker/dashboard/<user_id>
-# Returns a quick overview of the worker's insurance status.
 # ---------------------------------------------------------------------------
 @worker_dashboard_bp.route("/dashboard/<int:user_id>", methods=["GET"])
 def worker_dashboard(user_id):
@@ -61,7 +57,7 @@ def worker_dashboard(user_id):
 
 # ---------------------------------------------------------------------------
 # GET /worker/claims/<user_id>
-# Returns all claims filed by the worker.
+# Field names aligned with frontend: event_type, amount (not trigger_type/payout_amount)
 # ---------------------------------------------------------------------------
 @worker_dashboard_bp.route("/claims/<int:user_id>", methods=["GET"])
 def worker_claims(user_id):
@@ -77,11 +73,11 @@ def worker_claims(user_id):
             "total_claims": len(claims),
             "claims": [
                 {
-                    "claim_id":     c.claim_id,
-                    "trigger_type": c.trigger_type,
-                    "status":       c.status,
-                    "payout_amount": float(c.payout.amount) if c.payout else 0,
-                    "created_at":   c.created_at.strftime("%Y-%m-%d"),
+                    "claim_id":   c.claim_id,
+                    "event_type": c.trigger_type,        # renamed to match frontend
+                    "status":     c.status,
+                    "amount":     float(c.payout.amount) if c.payout else 0,  # renamed to match frontend
+                    "created_at": c.created_at.strftime("%Y-%m-%d"),
                 }
                 for c in claims
             ],
@@ -93,7 +89,6 @@ def worker_claims(user_id):
 
 # ---------------------------------------------------------------------------
 # GET /worker/policy/<user_id>
-# Returns the worker's active policy details.
 # ---------------------------------------------------------------------------
 @worker_dashboard_bp.route("/policy/<int:user_id>", methods=["GET"])
 def worker_policy(user_id):

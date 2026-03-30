@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GigShield Admin — Payouts</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">🛡️ GigShield Admin</div>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="workers.html">Workers</a>
+      <a href="policies.html">Policies</a>
+      <a href="claims.html">Claims</a>
+      <a href="payouts.html" class="active">Payouts</a>
+      <a href="simulate.html">Simulate</a>
+    </div>
+    <div style="display:flex;align-items:center;">
+      <span class="admin-info">Logged in as: <strong id="admin-name"></strong></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">💰 Payout History</div>
+        <div class="page-subtitle">Instant simulated payouts via UPI / IMPS / NEFT</div>
+      </div>
+    </div>
+
+    <p id="loading" class="loading">Loading payouts...</p>
+
+    <div id="content" style="display:none;">
+      <div class="payout-summary">
+        <div class="payout-sum-card green">
+          <div class="payout-sum-val" id="total-amount">₹0</div>
+          <div class="payout-sum-label">Total Disbursed</div>
+        </div>
+        <div class="payout-sum-card">
+          <div class="payout-sum-val" id="total-count">0</div>
+          <div class="payout-sum-label">Total Payouts</div>
+        </div>
+        <div class="payout-sum-card orange">
+          <div class="payout-sum-val" id="processed-count">0</div>
+          <div class="payout-sum-label">Processed</div>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Claim ID</th><th>User ID</th><th>Amount</th><th>Status</th><th>Processed At</th></tr>
+          </thead>
+          <tbody id="payouts-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/payouts.js"></script>
+</body>
+</html>
