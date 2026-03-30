@@ -35,6 +35,7 @@
 
     <div id="content" style="display:none;">
       <div class="table-controls">
+        <input type="text" id="search-bar" placeholder="Search by Claim ID, User, Policy, Trigger"/>
         <span class="count-label" id="claim-count"></span>
         <select class="filter-select" id="status-filter">
           <option value="ALL">All Statuses</option>
@@ -48,11 +49,27 @@
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr><th>Claim ID</th><th>User ID</th><th>Policy ID</th><th>Trigger Type</th><th>Status</th><th>Created At</th><th>Action</th></tr>
+            <tr>
+              <th>Claim ID</th>
+              <th>User</th>
+              <th>Policy ID</th>
+              <th>Trigger Type</th>
+              <th>Status</th>
+              <th>Created At</th>
+              <th>Actions</th>
+            </tr>
           </thead>
           <tbody id="claims-tbody"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal for View Details -->
+  <div id="claim-modal" class="modal" style="display:none;">
+    <div class="modal-box">
+      <span class="modal-close" onclick="closeModal()">×</span>
+      <div id="claim-modal-content"></div>
     </div>
   </div>
 

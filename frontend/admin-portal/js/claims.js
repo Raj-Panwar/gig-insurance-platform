@@ -29,12 +29,13 @@ function renderTable(claims) {
   tbody.innerHTML = claims.map(c => `
     <tr>
       <td>#${c.claim_id}</td>
-      <td>${c.user_id}</td>
+      <td>${c.user?.name || "Unknown"} (ID: ${c.user_id})</td>
       <td>#${c.policy_id}</td>
       <td>${c.trigger_type?.toUpperCase()}</td>
       <td><span class="badge ${STATUS_BADGE[c.status]||'badge-grey'}">${c.status}</span></td>
-      <td>${c.created_at || "—"}</td>
+      <td>${c.created_at ? new Date(c.created_at).toLocaleString() : "—"}</td>
       <td>
+        <button class="btn-view" onclick="viewClaim(${c.claim_id})">View</button>
         ${c.status === "PENDING"
           ? `<button class="process-btn" onclick="processPayout(${c.claim_id}, this)">Process Payout</button>`
           : `<span class="text-muted">—</span>`
@@ -42,6 +43,29 @@ function renderTable(claims) {
       </td>
     </tr>
   `).join("");
+}
+
+function viewClaim(claimId) {
+  const claim = allClaims.find(c => c.claim_id === claimId);
+  if (!claim) return alert("Claim not found.");
+
+  const modal = document.getElementById("claim-modal");
+  const modalContent = document.getElementById("claim-modal-content");
+
+  modalContent.innerHTML = `
+    <h3>Claim #${claim.claim_id}</h3>
+    <p><strong>User:</strong> ${claim.user?.name || "Unknown"} (ID: ${claim.user_id})</p>
+    <p><strong>Policy ID:</strong> #${claim.policy_id}</p>
+    <p><strong>Trigger Type:</strong> ${claim.trigger_type}</p>
+    <p><strong>Status:</strong> ${claim.status}</p>
+    <p><strong>Created At:</strong> ${claim.created_at ? new Date(claim.created_at).toLocaleString() : "—"}</p>
+  `;
+
+  modal.style.display = "block";
+}
+
+function closeModal() {
+  document.getElementById("claim-modal").style.display = "none";
 }
 
 async function processPayout(claimId, btn) {
@@ -62,9 +86,26 @@ async function processPayout(claimId, btn) {
 
 document.addEventListener("DOMContentLoaded", () => {
   loadClaims();
+
+  // Status filter
   document.getElementById("status-filter").addEventListener("change", (e) => {
     const val      = e.target.value;
     const filtered = val === "ALL" ? allClaims : allClaims.filter(c => c.status === val);
+    renderTable(filtered);
+  });
+
+  // Search filter
+  document.getElementById("search-bar").addEventListener("input", (e) => {
+    const val = e.target.value.toLowerCase();
+    const filtered = !val
+      ? allClaims
+      : allClaims.filter(c =>
+          String(c.claim_id).toLowerCase().includes(val) ||
+          String(c.user_id).toLowerCase().includes(val) ||
+          (c.user?.name || "").toLowerCase().includes(val) ||
+          String(c.policy_id).toLowerCase().includes(val) ||
+          (c.trigger_type || "").toLowerCase().includes(val)
+        );
     renderTable(filtered);
   });
 });

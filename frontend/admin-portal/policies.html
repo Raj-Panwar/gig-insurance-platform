@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>GigShield Admin — Policies</title>
+  <title>GigShield Admin — Zone Policies</title>
   <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
@@ -26,7 +26,7 @@
   <div class="page">
     <div class="page-header">
       <div>
-        <div class="page-title">📋 Insurance Policies</div>
+        <div class="page-title">📋 Zone Policies</div>
         <div class="page-subtitle">Weekly premium model — income protection only</div>
       </div>
     </div>
@@ -35,6 +35,7 @@
 
     <div id="content" style="display:none;">
       <div class="table-controls">
+        <input type="text" id="search-bar" placeholder="Search by Zone or Policy ID"/>
         <span class="count-label" id="policy-count"></span>
         <select class="filter-select" id="status-filter">
           <option value="ALL">All Statuses</option>
@@ -46,7 +47,14 @@
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr><th>Policy ID</th><th>User ID</th><th>Zone ID</th><th>Weekly Premium</th><th>Coverage Amount</th><th>Status</th></tr>
+            <tr>
+              <th>Policy ID</th>
+              <th>Zone</th>
+              <th>Weekly Premium</th>
+              <th>Coverage Amount</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
           </thead>
           <tbody id="policies-tbody"></tbody>
         </table>
@@ -58,5 +66,13 @@
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/policies.js"></script>
+
+  <div id="policy-modal" class="modal" style="display:none;">
+  <div class="modal-box">
+    <span class="modal-close" onclick="closeModal()">×</span>
+    <div id="policy-modal-content"></div>
+  </div>
+</div>
+
 </body>
 </html>

@@ -3,3 +3,11 @@ flask run --host=0.0.0.0
 cd frontend
 npx expo start
 npx expo start -c
+
+#starting the website
+change the ip address in the appi.js
+open terminal
+cd backend
+flask run
+then open the login.html (by clicking on LiveServer after opening the file)
+
