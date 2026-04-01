@@ -9,6 +9,7 @@ change the ip address in the appi.js
 open terminal
 cd backend
 flask run
+
 then open the login.html (by clicking on LiveServer after opening the file)
 
 python -m venv venv
