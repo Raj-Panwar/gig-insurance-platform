@@ -18,7 +18,7 @@
       <a href="simulate.html">Simulate</a>
     </div>
     <div style="display:flex;align-items:center;">
-      <span class="admin-info">Logged in as: <strong id="admin-name"></strong></span>
+      <span class="admin-info"><strong id="admin-name"></strong></span>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </nav>
@@ -26,8 +26,8 @@
   <div class="page">
     <div class="page-header">
       <div>
-        <div class="page-title">📋 Zone Policies</div>
-        <div class="page-subtitle">Weekly premium model — income protection only</div>
+        <div class="page-title">📋Zone Policies</div>
+       <!-- <div class="page-subtitle">Weekly premium model — income protection only</div>-->
       </div>
     </div>
 
@@ -67,7 +67,7 @@
   <script src="js/auth.js"></script>
   <script src="js/policies.js"></script>
 
-  <div id="policy-modal" class="modal" style="display:none;">
+  <div id="policy-modal" class="modal">
   <div class="modal-box">
     <span class="modal-close" onclick="closeModal()">×</span>
     <div id="policy-modal-content"></div>

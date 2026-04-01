@@ -18,7 +18,7 @@
       <a href="simulate.html">Simulate</a>
     </div>
     <div style="display:flex;align-items:center;">
-      <span class="admin-info">Logged in as: <strong id="admin-name"></strong></span>
+      <span class="admin-info"><strong id="admin-name"></strong></span>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </nav>
@@ -27,7 +27,7 @@
     <div class="page-header">
       <div>
         <div class="page-title">💰 Payout History</div>
-        <div class="page-subtitle">Instant simulated payouts via UPI / IMPS / NEFT</div>
+       <!-- <div class="page-subtitle">Instant simulated payouts via UPI / IMPS / NEFT</div>-->
       </div>
     </div>
 
@@ -52,11 +52,24 @@
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr><th>Claim ID</th><th>User ID</th><th>Amount</th><th>Status</th><th>Processed At</th></tr>
+            <tr>
+              <th>Claim ID</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Processed At</th>
+              <th>Actions</th>
+            </tr>
           </thead>
           <tbody id="payouts-tbody"></tbody>
         </table>
       </div>
+    </div>
+  </div>
+
+  <div id="payout-modal" class="modal">
+    <div class="modal-box">
+    <span class="modal-close" onclick="closeModal()">×</span>
+    <div id="payout-modal-content"></div>
     </div>
   </div>
 

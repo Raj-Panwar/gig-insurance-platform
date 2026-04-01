@@ -8,7 +8,7 @@
 </head>
 <body>
   <nav class="navbar">
-    <div class="brand">🛡️ GigShield Admin</div>
+    <div class="brand">🛡️GigShield Admin</div>
     <div class="nav-links">
       <a href="dashboard.html">Dashboard</a>
       <a href="workers.html">Workers</a>
@@ -18,7 +18,7 @@
       <a href="simulate.html" class="active">Simulate</a>
     </div>
     <div style="display:flex;align-items:center;">
-      <span class="admin-info">Logged in as: <strong id="admin-name"></strong></span>
+      <span class="admin-info"><strong id="admin-name"></strong></span>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </nav>
@@ -26,22 +26,22 @@
   <div class="page">
     <div class="page-header">
       <div>
-        <div class="page-title">⚡ Simulate Disruption Events</div>
-        <div class="page-subtitle">Trigger parametric events — claims are auto-created for all active policies in the location</div>
+        <div class="page-title">⚡Simulate Disruption Events</div>
+        <!--<div class="page-subtitle">Trigger parametric events — claims are auto-created for all active policies in the location</div>-->
       </div>
     </div>
 
     <div class="flow-note">
-      🔁 <strong>Zero-touch claim flow:</strong>
+      🔁 <!--<strong>Zero-touch claim flow:</strong>
       Trigger event below → Backend checks thresholds → Finds active policies in that city →
       Auto-creates claims → Fraud check runs (GPS) → Payouts generated instantly for approved claims
-    </div>
+    </div>-->
 
     <div class="sim-grid">
 
       <!-- Rain -->
       <div class="sim-card">
-        <div class="sim-title">🌧️ Heavy Rain</div>
+        <div class="sim-title">🌧️Heavy Rain</div>
         <div class="sim-threshold">Trigger threshold: rainfall ≥ 50mm</div>
         <form id="rain-form">
           <div class="form-group">
@@ -61,7 +61,7 @@
 
       <!-- Heatwave -->
       <div class="sim-card">
-        <div class="sim-title">🌡️ Heatwave</div>
+        <div class="sim-title">🌡️Heatwave</div>
         <div class="sim-threshold">Trigger threshold: temperature ≥ 45°C</div>
         <form id="heat-form">
           <div class="form-group">
@@ -81,7 +81,7 @@
 
       <!-- Pollution -->
       <div class="sim-card">
-        <div class="sim-title">🏭 Pollution Alert</div>
+        <div class="sim-title">🏭Pollution Alert</div>
         <div class="sim-threshold">Trigger threshold: AQI ≥ 400</div>
         <form id="pollution-form">
           <div class="form-group">

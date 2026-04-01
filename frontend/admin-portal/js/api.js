@@ -2,7 +2,7 @@
 // Shared Axios instance. Load this first on every page.
 // Automatically attaches JWT. Handles 401 globally.
 
-const BASE_URL = "http://192.168.1.4:5000"; // ← update to your machine IP
+const BASE_URL = "http://192.168.1.40:5000"; // ← update to your machine IP
 
 const apiClient = axios.create({
   baseURL: BASE_URL,

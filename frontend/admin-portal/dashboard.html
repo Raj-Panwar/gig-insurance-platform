@@ -8,7 +8,7 @@
 </head>
 <body>
   <nav class="navbar">
-    <div class="brand">🛡️ GigShield Admin</div>
+    <div class="brand">🛡️GigShield Admin</div>
     <div class="nav-links">
       <a href="dashboard.html" class="active">Dashboard</a>
       <a href="workers.html">Workers</a>
@@ -18,23 +18,21 @@
       <a href="simulate.html">Simulate</a>
     </div>
     <div style="display:flex;align-items:center;">
-      <span class="admin-info">Logged in as: <strong id="admin-name"></strong></span>
+      <span class="admin-info"><strong id="admin-name"></strong></span>
       <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </nav>
 
   <div class="page">
     <div class="page-header">
-      <div>
-        <div class="page-title">📊 System Dashboard</div>
-        <div class="page-subtitle">Phase 2 — Registration · Policy Management · Dynamic Premium · Claims</div>
-      </div>
+      <div class="page-title">📊 Platform Overview</div>
+      <div class="page-subtitle">Overview of platform activity and recent claims</div>
     </div>
 
-    <div class="flow-note">
+    <!--<div class="flow-note">
       💡 <strong>Phase 2 Demo Flow:</strong>
       Register a worker (mobile app) → Calculate Premium → Buy Policy → Simulate a disruption (this page) → Claims are auto-created → Process Payouts
-    </div>
+    </div>-->
 
     <p id="loading" class="loading">Loading dashboard stats...</p>
 
@@ -62,12 +60,17 @@
     </div>
 
     <div id="recent-section" style="display:none;">
-      <div class="section-title">🕐 Recent Claims</div>
+      <div class="section-title">📌 Latest Claims Activity</div>
       <div class="table-wrapper">
         <table>
           <thead>
             <tr>
-              <th>Claim ID</th><th>Worker</th><th>Trigger</th><th>Status</th><th>Date</th>
+              <th>ID</th>
+              <th>Worker</th>
+              <th>Trigger</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody id="recent-tbody"></tbody>
@@ -78,6 +81,13 @@
       </div>
     </div>
   </div>
+
+  <div id="claim-modal" class="modal">
+  <div class="modal-box">
+    <span class="modal-close" onclick="closeModal()">×</span>
+    <div id="claim-modal-content"></div>
+  </div>
+</div>
 
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="js/api.js"></script>

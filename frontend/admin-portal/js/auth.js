@@ -10,10 +10,15 @@ function requireAdmin() {
   if (el) el.textContent = localStorage.getItem("gigshield_admin_name") || "Admin";
 }
 
-function logout() {
-  localStorage.clear();
-  window.location.href = "/login.html";
-}
+window.logout = function () {
+  console.log("Logout clicked ✅");
+
+  localStorage.removeItem("gigshield_admin_token");
+  localStorage.removeItem("gigshield_admin_id");
+  localStorage.removeItem("gigshield_admin_name");
+
+  window.location.href = "login.html";
+};
 
 async function handleLogin(phone) {
   try {
