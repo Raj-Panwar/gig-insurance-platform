@@ -48,7 +48,7 @@ def seed():
 
             # 🎯 Ensure we ALWAYS get some APPROVED claims
             status = random.choices(
-                ["APPROVED", "PENDING", "REJECTED"],
+                ["PAID", "PENDING", "REJECTED"],
                 weights=[0.6, 0.3, 0.1]
             )[0]
 

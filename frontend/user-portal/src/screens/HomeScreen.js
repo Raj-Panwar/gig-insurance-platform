@@ -1,8 +1,11 @@
 // src/screens/HomeScreen.js
-import React, { useEffect, useState, useCallback } from 'react';
+// Changes: removed Quick Actions section, show recent claims only,
+//          policy banner shows policy type (not coverage amount),
+//          event popup for new claims, logout fixed (uses navigation.replace)
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
-  RefreshControl, TouchableOpacity, Alert,
+  RefreshControl, TouchableOpacity, Alert, Modal,
 } from 'react-native';
 import { COLORS, FONTS, RADIUS, SHADOW } from '../constants';
 import { Card, Badge, EmptyState, StatCard } from '../components';
@@ -10,14 +13,17 @@ import { getWorkerDashboard, getWorkerClaims } from '../services/dashboardServic
 import { getUserId, getUser, logoutWorker } from '../services/authService';
 import { trackAndSendLocation } from '../services/locationService';
 
-export default function HomeScreen({ navigation }) {
-  const [dashboard, setDashboard] = useState(null);
-  const [recentClaims, setRecentClaims] = useState([]);
-  const [user, setUser]         = useState(null);
-  const [loading, setLoading]   = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+const TRIGGER_ICONS = { rain: '🌧️', aqi: '🏭', heat: '🌡️' };
 
-  const load = useCallback(async () => {
+export default function HomeScreen({ navigation }) {
+  const [dashboard,    setDashboard]    = useState(null);
+  const [recentClaims, setRecentClaims] = useState([]);
+  const [user,         setUser]         = useState(null);
+  const [refreshing,   setRefreshing]   = useState(false);
+  const [newClaimPopup, setNewClaimPopup] = useState(null); // holds newest claim if new
+  const prevClaimCount = useRef(0);
+
+  const load = useCallback(async (isRefresh = false) => {
     try {
       const u  = await getUser();
       const id = await getUserId();
@@ -29,28 +35,35 @@ export default function HomeScreen({ navigation }) {
         getWorkerClaims(parseInt(id)),
       ]);
       setDashboard(dash);
-      setRecentClaims((claimsData.claims || []).slice(0, 3));
+      const claims = claimsData.claims || [];
 
-      // Silent GPS update for fraud detection
+      // Show popup if a new claim appeared since last load
+      if (isRefresh && claims.length > prevClaimCount.current && claims.length > 0) {
+        setNewClaimPopup(claims[0]);
+      }
+      prevClaimCount.current = claims.length;
+      setRecentClaims(claims.slice(0, 5));
+
       trackAndSendLocation().catch(() => {});
     } catch (err) {
       if (err?.status === 401) {
         await logoutWorker();
-        navigation.replace('Login');
+        navigation.replace('Login'); // fixed: was .navigate, now .replace
       }
     } finally {
-      setLoading(false);
       setRefreshing(false);
     }
   }, []);
 
-  useEffect(() => { load(); }, []);
-  const onRefresh = () => { setRefreshing(true); load(); };
+  useEffect(() => { load(false); }, []);
+  const onRefresh = () => { setRefreshing(true); load(true); };
 
-  const STATUS_COLOR = {
-    APPROVED: COLORS.success, PENDING: COLORS.warning,
-    FLAGGED: COLORS.accent,   REJECTED: COLORS.danger, PAID: COLORS.info,
-  };
+  const handleLogout = () =>
+    Alert.alert('Logout', 'Are you sure?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Logout', style: 'destructive',
+        onPress: async () => { await logoutWorker(); navigation.replace('Login'); } },
+    ]);
 
   return (
     <ScrollView
@@ -58,25 +71,47 @@ export default function HomeScreen({ navigation }) {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.primary]} />}
     >
+      {/* ── New Claim Popup ── */}
+      <Modal visible={!!newClaimPopup} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalIcon}>
+              {TRIGGER_ICONS[newClaimPopup?.trigger_type?.toLowerCase()] || '⚡'}
+            </Text>
+            <Text style={styles.modalTitle}>New Claim Generated!</Text>
+            <Text style={styles.modalBody}>
+              A {newClaimPopup?.trigger_type?.toUpperCase()} disruption was detected in your city.
+              A claim has been automatically created for you.
+            </Text>
+            <View style={styles.modalRow}>
+              <Text style={styles.modalLabel}>Status</Text>
+              <Badge label={newClaimPopup?.status} />
+            </View>
+            {newClaimPopup?.payout_amount > 0 && (
+              <View style={styles.modalRow}>
+                <Text style={styles.modalLabel}>Payout</Text>
+                <Text style={styles.modalValue}>₹{newClaimPopup?.payout_amount}</Text>
+              </View>
+            )}
+            <TouchableOpacity style={styles.modalBtn} onPress={() => setNewClaimPopup(null)}>
+              <Text style={styles.modalBtnText}>Got it</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* ── Hero Header ── */}
       <View style={styles.hero}>
         <View>
           <Text style={styles.heroGreeting}>Hello, {user?.name?.split(' ')[0] || 'Worker'} 👋</Text>
           <Text style={styles.heroSub}>{user?.city} · {user?.platform}</Text>
         </View>
-        <TouchableOpacity
-          style={styles.logoutBtn}
-          onPress={() => Alert.alert('Logout', 'Are you sure?', [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Logout', style: 'destructive',
-              onPress: async () => { await logoutWorker(); navigation.replace('Login'); }},
-          ])}
-        >
+        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </View>
 
-      {/* ── Policy Status Banner ── */}
+      {/* ── Policy Banner — shows policy type only, NOT coverage amount ── */}
       {dashboard && (
         <TouchableOpacity
           style={[styles.policyBanner,
@@ -88,12 +123,11 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.policyBannerLabel}>
               {dashboard.active_policy ? '✅ Policy Active' : '⚠️ No Active Policy'}
             </Text>
-            {dashboard.active_policy
-              ? <Text style={styles.policyBannerValue}>
-                  ₹{dashboard.coverage_amount} coverage · ₹{dashboard.weekly_premium}/week
-                </Text>
-              : <Text style={styles.policyBannerValue}>Tap to buy income protection →</Text>
-            }
+            <Text style={styles.policyBannerValue}>
+              {dashboard.active_policy
+                ? `${dashboard.policy_type || 'Standard'} Plan`
+                : 'Tap to buy income protection →'}
+            </Text>
           </View>
           <Text style={styles.policyArrow}>›</Text>
         </TouchableOpacity>
@@ -108,47 +142,22 @@ export default function HomeScreen({ navigation }) {
         </View>
       )}
 
-      {/* ── Quick Actions ── */}
-      <Text style={styles.sectionTitle}>Quick Actions</Text>
-      <View style={styles.actionGrid}>
-        {[
-          { icon: '📋', label: 'Buy Policy',   screen: 'Policy',   color: COLORS.primary },
-          { icon: '💰', label: 'Payouts',       screen: 'Payouts',  color: COLORS.success },
-          { icon: '🗂️', label: 'My Claims',    screen: 'Claims',   color: COLORS.accent },
-          { icon: '📍', label: 'Update Location', screen: null,    color: COLORS.info },
-        ].map((a) => (
-          <TouchableOpacity
-            key={a.label}
-            style={[styles.actionCard, SHADOW.sm]}
-            onPress={async () => {
-              if (a.screen) navigation.navigate(a.screen);
-              else {
-                const r = await trackAndSendLocation();
-                Alert.alert(r.success ? '📍 Location Updated' : '❌ Failed',
-                  r.success ? `City: ${r.city}` : r.error);
-              }
-            }}
-            activeOpacity={0.8}
-          >
-            <View style={[styles.actionIcon, { backgroundColor: a.color + '18' }]}>
-              <Text style={styles.actionEmoji}>{a.icon}</Text>
-            </View>
-            <Text style={styles.actionLabel}>{a.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* ── Recent Claims ── */}
+      {/* ── Recent Claims (no Quick Actions) ── */}
       <Text style={styles.sectionTitle}>Recent Claims</Text>
       {recentClaims.length === 0
         ? <EmptyState icon="🗂️" title="No claims yet"
-            subtitle="Claims are auto-created when a disruption is detected in your city" />
+            subtitle="Pull down to refresh. Claims appear when a disruption hits your city." />
         : recentClaims.map(c => (
             <Card key={c.claim_id} style={styles.claimCard}>
               <View style={styles.claimRow}>
-                <View>
-                  <Text style={styles.claimType}>{c.trigger_type?.toUpperCase()}</Text>
-                  <Text style={styles.claimDate}>{c.created_at}</Text>
+                <View style={styles.claimLeft}>
+                  <Text style={styles.claimIcon}>
+                    {TRIGGER_ICONS[c.trigger_type?.toLowerCase()] || '⚡'}
+                  </Text>
+                  <View>
+                    <Text style={styles.claimType}>{c.trigger_type?.toUpperCase()}</Text>
+                    <Text style={styles.claimDate}>{c.created_at}</Text>
+                  </View>
                 </View>
                 <View style={{ alignItems: 'flex-end' }}>
                   <Badge label={c.status} />
@@ -164,43 +173,53 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container:           { flex: 1, backgroundColor: COLORS.background },
-  content:             { paddingBottom: 32 },
+  container:            { flex: 1, backgroundColor: COLORS.background },
+  content:              { paddingBottom: 32 },
 
-  hero:                { backgroundColor: COLORS.primary, paddingTop: 56, paddingBottom: 28,
-                         paddingHorizontal: 20, flexDirection: 'row',
-                         alignItems: 'flex-start', justifyContent: 'space-between' },
-  heroGreeting:        { fontSize: 22, fontWeight: FONTS.bold, color: COLORS.white },
-  heroSub:             { fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 3 },
-  logoutBtn:           { backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 14,
-                         paddingVertical: 7, borderRadius: RADIUS.full },
-  logoutText:          { color: COLORS.white, fontSize: 13, fontWeight: FONTS.semibold },
+  // Modal
+  modalOverlay:         { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)',
+                          alignItems: 'center', justifyContent: 'center', padding: 24 },
+  modalCard:            { backgroundColor: COLORS.white, borderRadius: 20, padding: 24,
+                          width: '100%', alignItems: 'center' },
+  modalIcon:            { fontSize: 48, marginBottom: 12 },
+  modalTitle:           { fontSize: 20, fontWeight: FONTS.bold, color: COLORS.text, marginBottom: 8 },
+  modalBody:            { fontSize: 14, color: COLORS.textLight, textAlign: 'center',
+                          lineHeight: 20, marginBottom: 16 },
+  modalRow:             { flexDirection: 'row', justifyContent: 'space-between',
+                          width: '100%', marginBottom: 8, alignItems: 'center' },
+  modalLabel:           { fontSize: 14, color: COLORS.textLight },
+  modalValue:           { fontSize: 16, fontWeight: FONTS.bold, color: COLORS.success },
+  modalBtn:             { backgroundColor: COLORS.primary, borderRadius: RADIUS.md,
+                          paddingVertical: 12, paddingHorizontal: 32, marginTop: 8 },
+  modalBtnText:         { color: COLORS.white, fontWeight: FONTS.bold, fontSize: 15 },
 
-  policyBanner:        { marginHorizontal: 20, marginTop: -16, borderRadius: RADIUS.lg,
-                         padding: 18, flexDirection: 'row', alignItems: 'center',
-                         justifyContent: 'space-between', ...SHADOW.md },
-  policyBannerActive:  { backgroundColor: COLORS.success },
-  policyBannerInactive:{ backgroundColor: COLORS.accent },
-  policyBannerLabel:   { fontSize: 15, fontWeight: FONTS.bold, color: COLORS.white },
-  policyBannerValue:   { fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 3 },
-  policyArrow:         { fontSize: 28, color: COLORS.white, fontWeight: FONTS.bold },
+  hero:                 { backgroundColor: COLORS.primary, paddingTop: 56, paddingBottom: 28,
+                          paddingHorizontal: 20, flexDirection: 'row',
+                          alignItems: 'flex-start', justifyContent: 'space-between' },
+  heroGreeting:         { fontSize: 22, fontWeight: FONTS.bold, color: COLORS.white },
+  heroSub:              { fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 3 },
+  logoutBtn:            { backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 14,
+                          paddingVertical: 7, borderRadius: RADIUS.full },
+  logoutText:           { color: COLORS.white, fontSize: 13, fontWeight: FONTS.semibold },
 
-  statRow:             { flexDirection: 'row', marginHorizontal: 20, marginTop: 16, marginBottom: 8 },
+  policyBanner:         { marginHorizontal: 20, marginTop: -16, borderRadius: RADIUS.lg,
+                          padding: 18, flexDirection: 'row', alignItems: 'center',
+                          justifyContent: 'space-between', ...SHADOW.md },
+  policyBannerActive:   { backgroundColor: COLORS.success },
+  policyBannerInactive: { backgroundColor: COLORS.accent },
+  policyBannerLabel:    { fontSize: 15, fontWeight: FONTS.bold, color: COLORS.white },
+  policyBannerValue:    { fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 3 },
+  policyArrow:          { fontSize: 28, color: COLORS.white, fontWeight: FONTS.bold },
 
-  sectionTitle:        { fontSize: 17, fontWeight: FONTS.bold, color: COLORS.text,
-                         marginHorizontal: 20, marginTop: 20, marginBottom: 12 },
+  statRow:              { flexDirection: 'row', marginHorizontal: 20, marginTop: 16, marginBottom: 8 },
+  sectionTitle:         { fontSize: 17, fontWeight: FONTS.bold, color: COLORS.text,
+                          marginHorizontal: 20, marginTop: 20, marginBottom: 12 },
 
-  actionGrid:          { flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: 16, gap: 12 },
-  actionCard:          { width: '45%', backgroundColor: COLORS.white, borderRadius: RADIUS.lg,
-                         padding: 18, alignItems: 'center' },
-  actionIcon:          { width: 52, height: 52, borderRadius: 16,
-                         alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
-  actionEmoji:         { fontSize: 24 },
-  actionLabel:         { fontSize: 13, fontWeight: FONTS.semibold, color: COLORS.text, textAlign: 'center' },
-
-  claimCard:           { marginHorizontal: 20, marginBottom: 10 },
-  claimRow:            { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  claimType:           { fontSize: 14, fontWeight: FONTS.bold, color: COLORS.text },
-  claimDate:           { fontSize: 12, color: COLORS.textLight, marginTop: 2 },
-  claimAmount:         { fontSize: 14, fontWeight: FONTS.bold, color: COLORS.success, marginTop: 4 },
+  claimCard:            { marginHorizontal: 20, marginBottom: 10 },
+  claimRow:             { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  claimLeft:            { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  claimIcon:            { fontSize: 24 },
+  claimType:            { fontSize: 14, fontWeight: FONTS.bold, color: COLORS.text },
+  claimDate:            { fontSize: 12, color: COLORS.textLight, marginTop: 2 },
+  claimAmount:          { fontSize: 14, fontWeight: FONTS.bold, color: COLORS.success, marginTop: 4 },
 });

@@ -43,6 +43,7 @@ def create_policy():
         zone_id         = data["zone_id"],
         weekly_premium  = weekly_premium,
         coverage_amount = coverage_amount,
+        policy_type     = data.get("policy_type", "standard"),
         status          = "ACTIVE",
         start_date      = datetime.utcnow(),
     )
@@ -92,6 +93,7 @@ def _serialize(policy: Policy) -> dict:
         "zone_id":         policy.zone_id,
         "weekly_premium":  float(policy.weekly_premium),
         "coverage_amount": float(policy.coverage_amount),
+        "policy_type":     policy.policy_type,
         "status":          policy.status,
         "start_date":      policy.start_date.isoformat() if policy.start_date else None,
         "end_date":        policy.end_date.isoformat()   if policy.end_date   else None,

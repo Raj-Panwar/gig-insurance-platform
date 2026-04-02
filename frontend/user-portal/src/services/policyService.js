@@ -14,7 +14,7 @@ export const calculatePremium = async (zone_risk_level, coverage_amount) => {
 
 // ── Create Policy ─────────────────────────────────────────────────────────────
 // Backend expects: user_id, zone_id, weekly_premium, coverage_amount
-export const createPolicy = async (user_id, zone_id, weekly_premium, coverage_amount) => {
+export const createPolicy = async (user_id, zone_id, weekly_premium, coverage_amount, policy_type = 'standard') => {
   const res = await apiClient.post('/policy/create', {
     user_id,
     zone_id,
