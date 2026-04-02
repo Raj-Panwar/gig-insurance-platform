@@ -1,11 +1,14 @@
-import React from "react";
-import RootNavigator from "./src/core/navigation/RootNavigator";
-import { LanguageProvider } from "./src/state/language";
+// App.js
+import React from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AppNavigator from './src/navigation/AppNavigator';
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <RootNavigator />
-    </LanguageProvider>
+    <SafeAreaProvider>
+      <StatusBar style="light" backgroundColor="#1a237e" />
+      <AppNavigator />
+    </SafeAreaProvider>
   );
 }

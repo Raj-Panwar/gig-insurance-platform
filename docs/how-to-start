@@ -1,7 +1,27 @@
+intital setup
+cd backend
+cd scripts
+python seed_zones.py
+python seed_workers.py
+python seed_policies.py
+python seed_claims.py
+python seed_triggers.py
+python seed_admin.py
+python seed_payouts.py
+python seed_workers.py
+
+
+
+
 cd backend
 flask run --host=0.0.0.0
+
 cd frontend
+cd user-portal
+npx expo start --web
 npx expo start
+
+
 npx expo start -c
 
 #starting the website

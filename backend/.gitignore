@@ -12,6 +12,7 @@ env/
 .env/
 .venv/
 ENV/
+__pycache__/
 
 # ── Flask / SQLite database ───────────────────────────────────────────────────
 instance/
