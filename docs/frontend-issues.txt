@@ -1,142 +1,36 @@
-**Frontend Requirements & Issues to Fix**
+database:
+change the policy table to add the the policy type like preimum basic and one more
+add the password feild in the users table(well not required for the user, as they would be doing it using their phone number)
 
-### 1. Register Flow
+login page:
+login using phone number and check for the otp to verify
+log out optoin not working
 
-API: `POST /auth/register`
+registration page:
+don't ask for the location, take it automatically(maybe a need to add the route)
 
-Possible responses:
+change loactions as per the seed zones
 
-* **201** → User created successfully
-* **409** → User already exists
 
-Frontend behavior:
+home:
+choose between the tabs shown below vs the quick option(removable) show the recenct claims instead
+if an event is triggered then a pop up should be shown in which the claim is shown
 
-* If **409**, show message: **“User already registered.”**
-* Provide **button/link to Login page**.
 
-UX improvement:
 
-* After successful registration:
+policy page:
+half page shows the policy to choose like the(premiium, basic, and one other)
+while choosing show the details of what would be the preimum for the current week
+if a policy is already selected then it should cover the main area and show the amount to be paid this week, adn the expected premuim, and also the start date and the end date of the ongoing policy
+the banner which shows the policy, shouldn't show the amount coverage, but just show the policy type active
+ 
+location : manual addition(only certain not all and city selection)
 
-  * either **prefill the phone number on the login screen**, or
-  * **auto-login the user and redirect to Dashboard**.
 
-UI improvements:
 
-* Change label **“Phone” → “Phone Number”**.
-* Make **Register** a separate text link instead of part of the login button.
+claims:
+remove the tag of the apporved from the tags
+add an option to manually claim(which should send details like location, and the time (give an optino to select the time) add the optino in the cor
 
----
-
-### 2. Login Navigation Issue
-
-Current flow:
-
-Login → **Premium Screen**
-
-Expected flow:
-
-Login → **Dashboard**
-
-After successful login, users should land on a **Dashboard/Home screen**, not the premium calculation page.
-
----
-
-### 3. Premium Screen UX Issue
-
-Currently users can manually:
-
-* enter `zone_id`
-* click **Calculate Premium**
-
-This is **not intended UX**.
-
-Premium calculation should be **automatic**.
-
-Required change:
-
-* Remove manual `zone_id` input.
-* When the **Dashboard loads**, automatically call:
-
-`POST /premium/calculate`
-
-Send:
-
-* `zone_id`
-* `coverage_amount`
-
-Display only the **final premium result** to the user.
-
-The current screen should only be used for **developer testing**, not end users.
-
----
-
-### 4. Screens Required for Phase 2
-
-Frontend should implement these **5 screens**:
-
-**1. Register Screen**
-Fields:
-
-* Name
-* Phone Number
-* City
-* Platform (Swiggy/Zomato)
-
-API:
-`POST /auth/register`
-
----
-
-**2. Login Screen**
-
-Field:
-
-* Phone Number
-
-API:
-`POST /auth/login`
-
-After login → redirect to **Dashboard**.
-
----
-
-**3. Dashboard**
-
-Show:
-
-* Location
-* Risk Level
-* Premium
-* Coverage Amount
-* Policy Status
-
-Button:
-**Activate Protection**
-
-Premium should be **auto-calculated when the dashboard loads**.
-
----
-
-**4. Policy Activation Screen**
-
-API:
-`POST /policy/buy`
-
-Show:
-
-* Premium (example: ₹60/week)
-* Coverage (example: ₹2000)
-
----
-
-**5. Claim Status Screen**
-
-Show:
-
-* Last Trigger Event
-* Claim Status
-* Payout Amount
-
-Example:
-“Flood trigger detected – ₹2000 payout initiated.”
+payouts page:
+is that even necessary?

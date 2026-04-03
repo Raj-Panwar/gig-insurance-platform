@@ -103,7 +103,7 @@ Response:
   "active_policies": 7,
   "total_claims": 15,
   "approved_claims": 8,
-  "total_payouts": 5
+  "payouts": 5
 }
 ```
 
@@ -117,7 +117,7 @@ Show 5 stat cards on the page:
 | Active Policies | `active_policies` |
 | Total Claims | `total_claims` |
 | Approved Claims | `approved_claims` |
-| Total Payouts | `total_payouts` |
+| Total Payouts | `payouts` |
 
 **Additional API calls on this page:**
 

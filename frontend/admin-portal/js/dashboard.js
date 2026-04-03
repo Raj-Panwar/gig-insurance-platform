@@ -56,7 +56,7 @@ async function loadDashboard() {
     document.getElementById("active-policies").textContent = stats.active_policies ?? 0;
     document.getElementById("total-claims").textContent    = stats.total_claims ?? 0;
     document.getElementById("approved-claims").textContent = stats.approved_claims ?? 0;
-    document.getElementById("total-payouts").textContent   = stats.total_payouts ?? 0;
+    document.getElementById("total-payouts").textContent   = stats.payouts ?? 0;
 
     loadingEl.style.display   = "none";
     statsGridEl.style.display = "grid";

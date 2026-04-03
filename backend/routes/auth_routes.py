@@ -12,10 +12,11 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 @auth_bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json(silent=True)
+    print("REGISTER DATA:", data)
     if not data:
         return jsonify({"error": "Request body must be valid JSON."}), 400
 
-    required_fields = ["name", "phone", "city", "platform"]
+    required_fields = ["name", "phone", "email", "city", "platform"]
     missing = [f for f in required_fields if not data.get(f)]
     if missing:
         return jsonify({"error": f"Missing required fields: {', '.join(missing)}"}), 400
@@ -36,6 +37,7 @@ def register():
     )
     db.session.add(user)
     db.session.commit()
+    
 
     token = generate_token(user.id, user.role)
 

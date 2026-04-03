@@ -43,13 +43,13 @@ def process_payout():
         return jsonify({"error": f"Policy with id {claim.policy_id} not found."}), 404
 
     # Step 4: Calculate payout amount (50% of coverage)
-    payout_amount = round(float(policy.coverage_amount) * PAYOUT_PERCENTAGE, 2)
+    payout = round(float(policy.coverage_amount) * PAYOUT_PERCENTAGE, 2)
 
     # Step 5: Call mock payment gateway
     try:
         transaction = process_mock_payment(
             user_id = claim.user_id,
-            amount  = payout_amount,
+            amount  = payout,
         )
     except ValueError as e:
         return jsonify({"error": "Payment failed.", "details": str(e)}), 400
@@ -59,7 +59,7 @@ def process_payout():
     # Step 6: Create Payout record (store transaction_id for reference)
     payout = Payout(
         claim_id       = claim.claim_id,
-        amount         = payout_amount,
+        amount         = payout,
         status         = "PROCESSED",
         transaction_id = transaction["transaction_id"],
         processed_at   = datetime.utcnow(),
@@ -74,7 +74,7 @@ def process_payout():
     # Fire notification (non-blocking, after commit)
     notify_payout_processed(
         user_id        = claim.user_id,
-        amount         = payout_amount,
+        amount         = payout,
         transaction_id = transaction["transaction_id"],
     )
 

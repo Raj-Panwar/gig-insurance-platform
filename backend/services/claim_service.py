@@ -35,7 +35,9 @@ _PLATFORM_ROOT = os.path.dirname(_BACKEND_ROOT)
 
 # Change this name if your AI repo folder is named differently
 # e.g. "psychic-train_x" instead of "psychic-train-ai"
-AI_REPO_PATH = os.path.join(_PLATFORM_ROOT, "psychic-train-ai")
+AI_REPO_PATH = os.path.join(_BACKEND_ROOT, "..", "psychic-train-ai")
+AI_REPO_PATH = os.path.abspath(AI_REPO_PATH)
+print("✅ AI PATH:", AI_REPO_PATH)
 
 if AI_REPO_PATH not in sys.path:
     sys.path.insert(0, AI_REPO_PATH)
@@ -187,4 +189,31 @@ def run_full_automation(location: str = "Delhi", user_id: str = "U123") -> dict:
         "env_data": env_data,
         "events":   events_out,
         "claims":   claims_out,
+    }
+
+# ---------------------------------------------------------------------------
+# SIMPLE CLAIM FUNCTION (NO AI DEPENDENCY)
+# ---------------------------------------------------------------------------
+
+def process_claim(event, user_id):
+    """
+    Lightweight claim generator (bypasses AI engines)
+    """
+
+    severity = event.get("value", 0)
+
+    if severity > 120:
+        payout = 500
+    elif severity > 90:
+        payout = 300
+    elif severity > 70:
+        payout = 200
+    else:
+        payout = 100
+
+    return {
+        "user_id": user_id,
+        "event_type": event.get("type"),
+        "payout": payout,
+        "status": "APPROVED"
     }

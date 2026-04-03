@@ -175,7 +175,7 @@ def simulate_disruption():
 
         results         = []
         total_claims    = 0
-        total_payouts   = 0
+        payouts   = 0
         total_fraud     = 0
         triggered_count = 0
 
@@ -193,7 +193,7 @@ def simulate_disruption():
             if result.get("trigger") == "activated":
                 triggered_count += 1
                 total_claims  += result.get("claims_created",    0)
-                total_payouts += result.get("payouts_generated", 0)
+                payouts += result.get("payouts_generated", 0)
                 total_fraud   += result.get("fraud_flags",        0)
 
         return jsonify({
@@ -201,7 +201,7 @@ def simulate_disruption():
             "events_simulated":  len(disruption_events),
             "events_triggered":  triggered_count,
             "claims_created":    total_claims,
-            "payouts_generated": total_payouts,
+            "payouts_generated": payouts,
             "fraud_flags":       total_fraud,
             "breakdown":         results,
         }), 200 if triggered_count == 0 else 201

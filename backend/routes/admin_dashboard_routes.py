@@ -28,7 +28,7 @@ def get_all_claims():
                     "trigger_type": c.trigger_type,
                     "status":       c.status,
                     # payout lives in the payouts table — use the relationship
-                    "payout_amount": float(c.payout.amount) if c.payout else 0,
+                    "payout": float(c.payout.amount) if c.payout else 0,
                     "created_at":   c.created_at.strftime("%Y-%m-%d"),
                 }
                 for c in claims
@@ -53,14 +53,14 @@ def get_all_payouts():
             {
                 "claim_id":     p.claim_id,
                 "user_id":      p.claim.user_id,   # via Payout → Claim backref
-                "payout_amount": float(p.amount),
+                "payout": float(p.amount),
                 "status":       p.status,
                 "processed_at": p.processed_at.strftime("%Y-%m-%d") if p.processed_at else None,
             }
             for p in payouts
         ]
 
-        total_payout = sum(row["payout_amount"] for row in payout_list)
+        total_payout = sum(row["payout"] for row in payout_list)
 
         return jsonify({
             "payouts":      payout_list,

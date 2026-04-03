@@ -4,7 +4,7 @@ from datetime import datetime
 
 class Policy(db.Model):
     __tablename__ = "policies"
-
+   #no need of user id
     policy_id       = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id         = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     zone_id         = db.Column(db.Integer, db.ForeignKey("zones.zone_id"), nullable=False)

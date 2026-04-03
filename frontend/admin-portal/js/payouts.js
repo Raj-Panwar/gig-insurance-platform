@@ -64,7 +64,7 @@ function renderTable(payouts) {
       <!-- ❌ Removed User ID column -->
 
       <!-- Amount -->
-      <td><strong>₹${parseFloat(p.payout_amount).toFixed(2)}</strong></td>
+      <td><strong>₹${parseFloat(p.payout).toFixed(2)}</strong></td>
 
       <!-- Status -->
       <td>
@@ -114,7 +114,7 @@ function viewPayout(claimId) {
     <div class="modal-row">
       <span class="modal-label">Amount</span>
       <span class="modal-value">
-        ₹${parseFloat(payout.payout_amount).toFixed(2)}
+        ₹${parseFloat(payout.payout).toFixed(2)}
       </span>
     </div>
 

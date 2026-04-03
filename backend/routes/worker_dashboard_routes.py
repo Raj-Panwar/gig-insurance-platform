@@ -81,7 +81,7 @@ def worker_claims(user_id):
                     "claim_id":     c.claim_id,
                     "trigger_type": c.trigger_type,
                     "status":       c.status,
-                    "payout_amount": float(c.payout.amount) if c.payout else 0,
+                    "payout": float(c.payout.amount) if c.payout else 0,
                     "created_at":   c.created_at.strftime("%Y-%m-%d"),
                 }
                 for c in claims

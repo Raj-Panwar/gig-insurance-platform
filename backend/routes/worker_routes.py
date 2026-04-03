@@ -133,7 +133,7 @@ def get_worker_payouts(user_id):
 
         return jsonify({
             "user_id":       user_id,
-            "total_payouts": len(payouts),
+            "payouts": len(payouts),
             "total_amount":  round(sum(float(p.amount) for p in payouts), 2),
             "payouts": [{
                 "transaction_id": p.transaction_id or f"TXN-{p.payout_id}",
