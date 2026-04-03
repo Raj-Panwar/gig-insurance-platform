@@ -2,6 +2,9 @@
 // Changes: removed Quick Actions section, show recent claims only,
 //          policy banner shows policy type (not coverage amount),
 //          event popup for new claims, logout fixed (uses navigation.replace)
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import { Platform } from 'react-native';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
@@ -17,6 +20,7 @@ const TRIGGER_ICONS = { rain: '🌧️', aqi: '🏭', heat: '🌡️' };
 
 export default function HomeScreen({ navigation }) {
   const [dashboard,    setDashboard]    = useState(null);
+  const [city, setCity] = useState('');
   const [recentClaims, setRecentClaims] = useState([]);
   const [user,         setUser]         = useState(null);
   const [refreshing,   setRefreshing]   = useState(false);
@@ -56,20 +60,50 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   useEffect(() => { load(false); }, []);
+  useFocusEffect(
+  useCallback(() => {
+    const loadCity = async () => {
+      const savedCity = await AsyncStorage.getItem('city');
+      if (savedCity) {
+        setCity(savedCity);
+      }
+    };
+
+    loadCity();
+  }, [])
+);
   const onRefresh = () => { setRefreshing(true); load(true); };
 
-  const handleLogout = () =>
-    Alert.alert('Logout', 'Are you sure?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Logout', style: 'destructive',
-        onPress: async () => { await logoutWorker(); navigation.replace('Login'); } },
-    ]);
-
+const handleLogout = () => {
+  if (Platform.OS === 'web') {
+    const confirmLogout = window.confirm("Are you sure you want to log out?");
+    if (confirmLogout) {
+      logoutWorker();
+      navigation.replace("Login");
+    }
+  } else {
+    Alert.alert(
+      "Logout",
+      "Are you sure?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Yes",
+          onPress: async () => {
+            await logoutWorker();
+            navigation.replace("Login");
+          },
+        },
+      ]
+    );
+  }
+};
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.primary]} />}
+      
     >
       {/* ── New Claim Popup ── */}
       <Modal visible={!!newClaimPopup} transparent animationType="fade">
@@ -87,10 +121,10 @@ export default function HomeScreen({ navigation }) {
               <Text style={styles.modalLabel}>Status</Text>
               <Badge label={newClaimPopup?.status} />
             </View>
-            {newClaimPopup?.payout_amount > 0 && (
+            {newClaimPopup?.payout > 0 && (
               <View style={styles.modalRow}>
                 <Text style={styles.modalLabel}>Payout</Text>
-                <Text style={styles.modalValue}>₹{newClaimPopup?.payout_amount}</Text>
+                <Text style={styles.modalValue}>₹{newClaimPopup?.payout}</Text>
               </View>
             )}
             <TouchableOpacity style={styles.modalBtn} onPress={() => setNewClaimPopup(null)}>
@@ -104,11 +138,18 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.hero}>
         <View>
           <Text style={styles.heroGreeting}>Hello, {user?.name?.split(' ')[0] || 'Worker'} 👋</Text>
-          <Text style={styles.heroSub}>{user?.city} · {user?.platform}</Text>
+          <Text style={styles.heroSub}>
+  {(city || user?.city) + " · " + (user?.platform || "")}
+</Text>
         </View>
-        <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
+       <TouchableOpacity
+  onPress={() => {
+    console.log("🔥 Logout button pressed");
+    handleLogout();
+  }}
+>
+  <Text>Logout</Text>
+</TouchableOpacity>
       </View>
 
       {/* ── Policy Banner — shows policy type only, NOT coverage amount ── */}
@@ -161,7 +202,7 @@ export default function HomeScreen({ navigation }) {
                 </View>
                 <View style={{ alignItems: 'flex-end' }}>
                   <Badge label={c.status} />
-                  {c.payout_amount > 0 && <Text style={styles.claimAmount}>₹{c.payout_amount}</Text>}
+                  {c.payout > 0 && <Text style={styles.claimAmount}>₹{c.payout}</Text>}
                 </View>
               </View>
             </Card>

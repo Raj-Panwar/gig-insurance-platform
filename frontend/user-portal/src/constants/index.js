@@ -66,7 +66,7 @@ export const SHADOW = {
 // ── Backend URL ───────────────────────────────────────────────────────────────
 // Change this to your machine's local IP when running the Flask backend
 //change this later
-export const API_BASE_URL = 'http://localhost:5000';
+export const API_BASE_URL = "http://127.0.0.1:5000";
 
 
 // ── Storage keys ─────────────────────────────────────────────────────────────

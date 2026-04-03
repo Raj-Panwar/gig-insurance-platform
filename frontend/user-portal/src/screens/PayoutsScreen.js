@@ -19,7 +19,7 @@ export default function PayoutsScreen() {
     if (!id) return;
     try {
       const data = await getWorkerPayouts(parseInt(id));
-      // Backend returns: { user_id, total_payouts, total_amount, payouts[] }
+      // Backend returns: { user_id, payouts, total_amount, payouts[] }
       setPayouts(data.payouts    || []);
       setTotal(data.total_amount || 0);
     } catch (_) {}

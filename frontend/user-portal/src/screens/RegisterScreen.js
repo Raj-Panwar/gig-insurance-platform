@@ -8,38 +8,10 @@ import {
 import { COLORS, FONTS, RADIUS, SHADOW, PLATFORMS } from '../constants';
 import { Button, Input } from '../components';
 import { registerWorker } from '../services/authService';
-import { getCurrentCoords, getCityFromCoords, requestLocationPermission } from '../services/locationService';
-
 export default function RegisterScreen({ navigation }) {
-  const [form,    setForm]    = useState({ name: '', phone: '', platform: '' });
+  const [form, setForm] = useState({ name: '', phone: '', email: '', city: '', platform: '' });
   const [errors,  setErrors]  = useState({});
   const [loading, setLoading] = useState(false);
-  const [detectedCity, setDetectedCity] = useState('Detecting...');
-
-  // Auto-detect city on mount
-  // Auto-detect city on mount
-React.useEffect(() => {
-  (async () => {
-    try {
-      const allowed = await requestLocationPermission();
-      if (!allowed) { 
-        // ❌ Location not allowed — fallback to Delhi
-        Alert.alert(
-        "Location Unavailable",
-        "City could not be detected. Defaulting to Delhi."
-      );
-        setDetectedCity('Delhi'); 
-        return; 
-      }
-      const { latitude, longitude } = await getCurrentCoords();
-      const city = await getCityFromCoords(latitude, longitude);
-      setDetectedCity(city || 'Delhi'); // ✅ If city is null/undefined, fallback to Delhi
-    } catch (_) {
-      // ❌ Location error — fallback to Delhi
-      setDetectedCity('Delhi');
-    }
-  })();
-}, []);
 
 
   const set = (key, val) => {
@@ -51,6 +23,10 @@ React.useEffect(() => {
     const e = {};
     if (!form.name.trim())     e.name     = 'Full name is required.';
     if (!form.phone.trim() || form.phone.length < 10) e.phone = 'Enter a valid 10-digit phone.';
+    if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) {
+  e.email = 'Enter a valid email address.';
+}
+    if (!form.city.trim()) e.city = 'City is required.';
     if (!form.platform.trim()) e.platform = 'Select your platform.';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -61,7 +37,7 @@ React.useEffect(() => {
     setLoading(true);
     try {
       // city is auto-detected, not entered by user
-      await registerWorker(form.name.trim(), form.phone.trim(), detectedCity, form.platform.trim());
+      await registerWorker(form.name.trim(), form.phone.trim(), form.email.trim(),form.city.trim(), form.platform.trim());
       navigation.replace('MainTabs');
     } catch (err) {
       setErrors({ general: err?.message || 'Registration failed. Try a different phone number.' });
@@ -96,15 +72,21 @@ React.useEffect(() => {
           <Input label="Phone Number" value={form.phone} onChangeText={v => set('phone', v)}
                  placeholder="10-digit mobile number" keyboardType="phone-pad"
                  maxLength={10} error={errors.phone} />
+          <Input
+  label="Email (optional)"
+  value={form.email}
+  onChangeText={v => set('email', v)}
+  placeholder="e.g. raj@gmail.com"
+  keyboardType="email-address"
+/>
 
           {/* City auto-detected — shown but not editable */}
-          <View style={styles.cityRow}>
-            <Text style={styles.label}>Your City (Auto-detected)</Text>
-            <View style={styles.cityChip}>
-              <Text style={styles.cityIcon}>📍</Text>
-              <Text style={styles.cityText}>{detectedCity}</Text>
-            </View>
-          </View>
+          <Input
+  label="City"
+  value={form.city}
+  onChangeText={v => set('city', v)}
+  placeholder="Enter your city (e.g. Delhi, Mumbai)"
+/>
 
           <Text style={styles.label}>Delivery Platform</Text>
           <View style={styles.platformGrid}>

@@ -104,8 +104,8 @@ export default function ClaimsScreen() {
       </View>
       <View style={styles.claimBottom}>
         <Text style={styles.claimDesc}>{STATUS_DESC[c.status] || c.status}</Text>
-        {c.payout_amount > 0 && (
-          <Text style={styles.claimAmount}>₹{c.payout_amount}</Text>
+        {c.payout > 0 && (
+          <Text style={styles.claimAmount}>₹{c.payout}</Text>
         )}
       </View>
     </Card>

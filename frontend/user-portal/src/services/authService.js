@@ -28,8 +28,8 @@ export const isLoggedIn = async () => {
 };
 
 // ── Register ──────────────────────────────────────────────────────────────────
-export const registerWorker = async (name, phone, city, platform) => {
-  const res = await apiClient.post('/auth/register', { name, phone, city, platform });
+export const registerWorker = async (name, phone, email, city, platform) => {
+  const res = await apiClient.post('/auth/register', { name, phone, email, city, platform });
   const { token, user } = res.data;
   await storeSession(token, user.id, user);
   return { token, user };
@@ -44,4 +44,17 @@ export const loginWorker = async (phone) => {
 };
 
 // ── Logout ────────────────────────────────────────────────────────────────────
-export const logoutWorker = () => clearSession();
+export const logoutWorker = async () => {
+  try {
+    await AsyncStorage.multiRemove([
+      STORAGE_KEYS.TOKEN,
+      STORAGE_KEYS.USER_ID,
+      STORAGE_KEYS.USER,
+      "city"
+    ]);
+
+    console.log("✅ Cleared all storage properly");
+  } catch (error) {
+    console.log("❌ Logout error:", error);
+  }
+};

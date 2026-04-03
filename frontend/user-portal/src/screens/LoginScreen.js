@@ -1,6 +1,7 @@
 // src/screens/LoginScreen.js
 // Changes: OTP mock verification step added, logout fix is in navigation (replace not navigate)
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View, Text, StyleSheet, ScrollView,
   TouchableOpacity, KeyboardAvoidingView, Platform, Alert,
@@ -10,6 +11,21 @@ import { Button, Input } from '../components';
 import { loginWorker } from '../services/authService';
 
 export default function LoginScreen({ navigation }) {
+  useEffect(() => {
+  const checkLogin = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+
+      if (token) {
+        navigation.replace("MainTabs"); // ⚠️ IMPORTANT CHANGE
+      }
+    } catch (err) {
+      console.log("Token check error:", err);
+    }
+  };
+
+  checkLogin();
+}, []);
   const [phone,   setPhone]   = useState('');
   // const [otp,     setOtp]     = useState('');              // 🔒 OTP state (disabled for testing)
   // const [step,    setStep]    = useState('phone');         // 🔒 Step state (disabled for testing)
@@ -50,7 +66,9 @@ export default function LoginScreen({ navigation }) {
   */
 
   // ✅ Direct login without OTP (temporary for testing)
+
   const handleLogin = async () => {
+      console.log("📡 Login button clicked");
     setError('');
     if (!phone.trim() || phone.trim().length < 10) {
       setError('Enter a valid 10-digit phone number.');
@@ -58,6 +76,7 @@ export default function LoginScreen({ navigation }) {
     }
     setLoading(true);
     try {
+         console.log("📡 Sending request to backend...");
       await loginWorker(phone.trim());
       navigation.replace('MainTabs');
     } catch (err) {
@@ -72,7 +91,7 @@ export default function LoginScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
 
         <View style={styles.header}>
-          <Text style={styles.shield}>🛡️</Text>
+          <Text style={styles.shield}>{"🛡️"}</Text>
           <Text style={styles.brand}>GigShield</Text>
           <Text style={styles.tagline}>Welcome back, partner</Text>
         </View>
@@ -115,9 +134,10 @@ export default function LoginScreen({ navigation }) {
           <Button title="Login" onPress={handleLogin} loading={loading} style={styles.loginBtn} />
 
           <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.registerLink}>
-            <Text style={styles.registerText}>
-              New gig worker? <Text style={styles.registerBold}>Register here →</Text>
-            </Text>
+           <View style={{ alignItems: "center" }}>
+  <Text>New gig worker?</Text>
+  <Text style={{ color: "blue" }}>Register here →</Text>
+</View>
           </TouchableOpacity>
         </View>
 
