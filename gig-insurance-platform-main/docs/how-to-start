@@ -1,0 +1,40 @@
+intital setup
+cd backend
+cd scripts
+python seed_zones.py
+python seed_workers.py
+python seed_policies.py
+python seed_claims.py
+python seed_triggers.py
+python seed_admin.py
+python seed_payouts.py
+python seed_workers.py
+
+
+
+
+cd backend
+flask run --host=0.0.0.0
+
+cd frontend
+cd user-portal
+npm install
+npx expo start --web
+npx expo start
+
+
+npx expo start -c
+
+#starting the website
+change the ip address in the appi.js
+open terminal
+cd backend
+flask run
+
+then open the login.html (by clicking on LiveServer after opening the file)
+
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+set FLASK_APP=app.py
+ flask run --host=0.0.0.0 --port=5000

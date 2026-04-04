@@ -1,0 +1,36 @@
+database:
+change the policy table to add the the policy type like preimum basic and one more
+add the password feild in the users table(well not required for the user, as they would be doing it using their phone number)
+
+login page:
+login using phone number and check for the otp to verify
+log out optoin not working
+
+registration page:
+don't ask for the location, take it automatically(maybe a need to add the route)
+
+change loactions as per the seed zones
+
+
+home:
+choose between the tabs shown below vs the quick option(removable) show the recenct claims instead
+if an event is triggered then a pop up should be shown in which the claim is shown
+
+
+
+policy page:
+half page shows the policy to choose like the(premiium, basic, and one other)
+while choosing show the details of what would be the preimum for the current week
+if a policy is already selected then it should cover the main area and show the amount to be paid this week, adn the expected premuim, and also the start date and the end date of the ongoing policy
+the banner which shows the policy, shouldn't show the amount coverage, but just show the policy type active
+ 
+location : manual addition(only certain not all and city selection)
+
+
+
+claims:
+remove the tag of the apporved from the tags
+add an option to manually claim(which should send details like location, and the time (give an optino to select the time) add the optino in the cor
+
+payouts page:
+is that even necessary?

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GigShield Admin — Simulate</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="brand">🛡️GigShield Admin</div>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="workers.html">Workers</a>
+      <a href="policies.html">Policies</a>
+      <a href="claims.html">Claims</a>
+      <a href="payouts.html">Payouts</a>
+      <a href="simulate.html" class="active">Simulate</a>
+    </div>
+    <div style="display:flex;align-items:center;">
+      <span class="admin-info"><strong id="admin-name"></strong></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page">
+    <div class="page-header">
+      <div>
+        <div class="page-title">⚡Simulate Disruption Events</div>
+        <!--<div class="page-subtitle">Trigger parametric events — claims are auto-created for all active policies in the location</div>-->
+      </div>
+    </div>
+
+    <div class="flow-note">
+      🔁 <!--<strong>Zero-touch claim flow:</strong>
+      Trigger event below → Backend checks thresholds → Finds active policies in that city →
+      Auto-creates claims → Fraud check runs (GPS) → Payouts generated instantly for approved claims
+    </div>-->
+
+    <div class="sim-grid">
+
+      <!-- Rain -->
+      <div class="sim-card">
+        <div class="sim-title">🌧️Heavy Rain</div>
+        <div class="sim-threshold">Trigger threshold: rainfall ≥ 50mm</div>
+        <form id="rain-form">
+          <div class="form-group">
+            <label>Location (City)</label>
+            <input id="rain-location" type="text" placeholder="e.g. Delhi" required/>
+          </div>
+          <div class="form-group">
+            <label>Rainfall (mm)</label>
+            <input id="rain-mm" type="number" placeholder="e.g. 60" min="0" required/>
+          </div>
+          <button type="submit" class="trigger-btn" id="rain-btn" data-label="Trigger Rain Event">
+            Trigger Rain Event
+          </button>
+        </form>
+        <div id="rain-result" class="result-box"></div>
+      </div>
+
+      <!-- Heatwave -->
+      <div class="sim-card">
+        <div class="sim-title">🌡️Heatwave</div>
+        <div class="sim-threshold">Trigger threshold: temperature ≥ 45°C</div>
+        <form id="heat-form">
+          <div class="form-group">
+            <label>Location (City)</label>
+            <input id="heat-location" type="text" placeholder="e.g. Delhi" required/>
+          </div>
+          <div class="form-group">
+            <label>Temperature (°C)</label>
+            <input id="heat-temp" type="number" placeholder="e.g. 46" min="0" required/>
+          </div>
+          <button type="submit" class="trigger-btn" id="heat-btn" data-label="Trigger Heatwave">
+            Trigger Heatwave
+          </button>
+        </form>
+        <div id="heat-result" class="result-box"></div>
+      </div>
+
+      <!-- Pollution -->
+      <div class="sim-card">
+        <div class="sim-title">🏭Pollution Alert</div>
+        <div class="sim-threshold">Trigger threshold: AQI ≥ 400</div>
+        <form id="pollution-form">
+          <div class="form-group">
+            <label>Location (City)</label>
+            <input id="poll-location" type="text" placeholder="e.g. Delhi" required/>
+          </div>
+          <div class="form-group">
+            <label>AQI Value</label>
+            <input id="poll-aqi" type="number" placeholder="e.g. 420" min="0" required/>
+          </div>
+          <button type="submit" class="trigger-btn" id="poll-btn" data-label="Trigger Pollution Alert">
+            Trigger Pollution Alert
+          </button>
+        </form>
+        <div id="poll-result" class="result-box"></div>
+      </div>
+
+    </div>
+
+    <div class="mt-16" style="text-align:center;">
+      <a href="claims.html" class="btn btn-primary">View Generated Claims →</a>
+      &nbsp;
+      <a href="payouts.html" class="btn btn-success">View Payouts →</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/simulate.js"></script>
+</body>
+</html>

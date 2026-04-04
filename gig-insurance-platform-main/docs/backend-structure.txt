@@ -1,0 +1,70 @@
+backend/
+│
+├── app.py                          ← Flask app factory, all blueprints registered
+├── config.py                       ← DB URI, SECRET_KEY, SQLAlchemy settings
+│
+├── database/
+│   ├── __init__.py                 ← empty package marker
+│   └── db.py                       ← SQLAlchemy instance + init_db()
+│
+├── models/                         ← 9 database tables
+│   ├── __init__.py                 ← empty package marker
+│   ├── user.py                     ← users (id, name, phone, email, city, platform, role)
+│   ├── zone.py                     ← zones (zone_id, city, risk_level, flood/pollution/heat risk)
+│   ├── policy.py                   ← policies (policy_id, user_id, zone_id, premium, coverage, status)
+│   ├── risk_profile.py             ← risk_profiles (profile_id, user_id, zone_id, risk_score)
+│   ├── parametric_trigger.py       ← parametric_triggers (trigger_id, event_type, threshold, severity)
+│   ├── disruption_event.py         ← disruption_events (event_id, event_type, location, severity, timestamp)
+│   ├── claim.py                    ← claims (claim_id, user_id, policy_id, event_id, trigger_type, status)
+│   ├── payout.py                   ← payouts (payout_id, claim_id, amount, status, transaction_id)
+│   └── worker_location.py          ← worker_locations (id, user_id, latitude, longitude, city, timestamp)
+│
+├── routes/                         ← 14 blueprint files
+│   ├── __init__.py                 ← re-exports all blueprints
+│   │
+│   ├── auth_routes.py              ← POST /auth/register, /auth/login, /auth/refresh
+│   ├── policy_routes.py            ← POST /policy/create  |  GET /policy/<user_id>
+│   ├── premium_routes.py           ← POST /premium/calculate
+│   ├── trigger_routes.py           ← POST /trigger/event
+│   ├── payout_routes.py            ← POST /payout/process
+│   │
+│   ├── worker_routes.py            ← POST /worker/location
+│   │                                  GET  /worker/policy/<user_id>
+│   │                                  GET  /worker/claims/<user_id>
+│   │                                  GET  /worker/payouts/<user_id>
+│   │
+│   ├── worker_dashboard_routes.py  ← GET /worker/dashboard/<user_id>
+│   │                                  GET /worker/claims/<user_id>   (alt)
+│   │                                  GET /worker/policy/<user_id>   (alt)
+│   │
+│   ├── dashboard_routes.py         ← GET /dashboard/stats
+│   ├── admin_routes.py             ← GET /admin/workers|policies|claims
+│   ├── admin_dashboard_routes.py   ← GET /dashboard/claims|payouts|workers
+│   │
+│   ├── risk_routes.py              ← POST /risk/profile
+│   │                                  GET  /risk/profile/<user_id>
+│   │
+│   ├── threshold_routes.py         ← GET|POST /thresholds
+│   │                                  PUT|DELETE /thresholds/<id>
+│   │
+│   ├── simulate_routes.py          ← POST /simulate/rain|heatwave|pollution|disruption
+│   └── simulation_routes.py        ← alias re-export of simulate_bp
+│
+├── services/                       ← business logic layer (no Flask, no routes)
+│   ├── __init__.py                 ← empty package marker
+│   ├── premium_engine.py           ← calculate_premium(zone_risk, weather_risk, coverage)
+│   ├── trigger_engine.py           ← process_event(event_type, location, severity)
+│   ├── fraud_detection.py          ← check_location_fraud() + validate_worker_location()
+│   ├── disruption_data_service.py  ← get_weather/aqi/heatwave_data(location)  [mock]
+│   ├── payment_service.py          ← process_mock_payment(user_id, amount)     [mock]
+│   └── notification_service.py     ← notify_claim/payout/fraud/policy()        [stub]
+│
+├── utils/
+│   ├── __init__.py                 ← empty package marker
+│   ├── jwt_helper.py               ← generate_token, decode_token
+│   │                                  @login_required, @admin_required, @worker_self_only
+│   └── auth_middleware.py          ← legacy header-based @admin_required (superseded)
+│
+└── scripts/                        ← one-time setup scripts
+    ├── seed_zones.py               ← seeds 15 Indian cities into zones table
+    └── seed_admin.py               ← creates the first admin user
